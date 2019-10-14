@@ -1,0 +1,20 @@
+micronaut:
+  application:
+    name: micronaut-consumer
+  server:
+    port: 8002
+    netty:
+      compression-threshold: 1024000000
+
+eureka:
+  client:
+    registration:
+      enabled: true
+    defaultZone: "${eureka.host:localhost}:${eureka.port:8761}"
+
+mongodb:
+  uri: "mongodb://${mongodb.host:localhost}:${mongodb.port:27017}/micronaut-consumer"
+  cluster:
+    maxWaitQueueSize: 5
+  connectionPool:
+    maxSize: 20
