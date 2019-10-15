@@ -15,19 +15,14 @@ import java.util.List;
 public class PersonController {
     private final PersonService personService;
 
-    @PostMapping
-    public Mono<PersonDTO> save(@RequestBody final PersonDTO person) {
-        return personService.save(person);
-    }
-
-    @GetMapping("{firstName}")
-    public Mono<PersonDTO> findByFirstName(@PathVariable("firstName") final String firstName) {
-        return personService.findByFirstName(firstName);
-    }
-
     @GetMapping("/aggregate")
     public Mono<List<PersonAggregationDataDTO>> getAggregation() {
         return personService.getAggregation();
+    }
+
+    @PostMapping
+    public Mono<PersonDTO> save(@RequestBody final PersonDTO person) {
+        return personService.save(person);
     }
 }
 

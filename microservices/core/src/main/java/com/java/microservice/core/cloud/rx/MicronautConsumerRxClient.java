@@ -26,10 +26,6 @@ public class MicronautConsumerRxClient {
         return new GetAggregationObservableCommand(client).toObservable();
     }
 
-    public Observable<PersonDTO> findByFirstName(final String firstName) {
-        return new FindByFirstNameObservableCommand(client, firstName).toObservable();
-    }
-
     class SavePersonObservableCommand extends HystrixObservableCommand<PersonDTO> {
         private final MicronautConsumerClient client;
         private final PersonDTO request;
@@ -44,23 +40,6 @@ public class MicronautConsumerRxClient {
         @Override
         protected Observable<PersonDTO> construct() {
             return fromCallable(() -> client.save(request));
-        }
-    }
-
-    class FindByFirstNameObservableCommand extends HystrixObservableCommand<PersonDTO> {
-        private final MicronautConsumerClient client;
-        private final String firstName;
-
-        FindByFirstNameObservableCommand(final MicronautConsumerClient client,
-                                         final String firstName) {
-            super(HystrixCommandGroupKey.Factory.asKey("default"));
-            this.client = client;
-            this.firstName = firstName;
-        }
-
-        @Override
-        protected Observable<PersonDTO> construct() {
-            return fromCallable(() -> client.findByFirstName(firstName));
         }
     }
 

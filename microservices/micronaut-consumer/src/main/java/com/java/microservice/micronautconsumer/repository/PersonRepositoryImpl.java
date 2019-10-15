@@ -15,7 +15,6 @@ import static com.mongodb.client.model.Accumulators.avg;
 import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.match;
-import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gte;
 import static java.util.List.of;
 import static org.hibernate.validator.internal.util.CollectionHelper.newArrayList;
@@ -27,17 +26,6 @@ public class PersonRepositoryImpl extends AbstractMongoRepository<Person> implem
     @Inject
     public PersonRepositoryImpl(final MongoClient mongoClient) {
         super(mongoClient, COLLECTION_NAME, Person.class);
-    }
-
-    @Override
-    public Single<Person> save(final Person person) {
-        return Single.fromPublisher(getCollection().insertOne(person))
-                .map(success -> person);
-    }
-
-    @Override
-    public Flowable<Person> findByFirstName(final String firstName) {
-        return Flowable.fromPublisher(getCollection().find(eq("firstName", firstName)));
     }
 
     @Override
@@ -58,5 +46,11 @@ public class PersonRepositoryImpl extends AbstractMongoRepository<Person> implem
                         )
                 )
                 .collectInto(newArrayList(), List::add);
+    }
+
+    @Override
+    public Single<Person> save(final Person person) {
+        return Single.fromPublisher(getCollection().insertOne(person))
+                .map(success -> person);
     }
 }

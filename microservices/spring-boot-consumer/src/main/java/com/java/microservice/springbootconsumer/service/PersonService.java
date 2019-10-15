@@ -16,24 +16,18 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class PersonService {
-    private final PersonRepository repository;
     private final MappingService mappingService;
-
-    public Mono<PersonDTO> save(final PersonDTO request) {
-        log.info("Saving person: {}", request);
-        return repository.save(mappingService.map(request, Person.class))
-                .map(person -> mappingService.map(person, PersonDTO.class));
-    }
-
-    public Mono<PersonDTO> findByFirstName(final String firstName) {
-        log.info("Searching for person with name: {}", firstName);
-        return repository.findFirstByFirstName(firstName)
-                .map(person -> mappingService.map(person, PersonDTO.class));
-    }
+    private final PersonRepository repository;
 
     public Mono<List<PersonAggregationDataDTO>> getAggregation() {
         log.info("Aggregating...");
         return repository.getAggregation()
                 .map(aggregation -> mappingService.mapAsList(aggregation, PersonAggregationDataDTO.class));
+    }
+
+    public Mono<PersonDTO> save(final PersonDTO request) {
+        log.info("Saving person: {}", request);
+        return repository.save(mappingService.map(request, Person.class))
+                .map(person -> mappingService.map(person, PersonDTO.class));
     }
 }

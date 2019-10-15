@@ -30,11 +30,6 @@ public class PersonController {
         return personService.save(person);
     }
 
-    @Get("/{firstName}")
-    public Flowable<PersonDTO> findByFirstName(@PathVariable final String firstName) {
-        return personService.findByFirstName(firstName);
-    }
-
     @Get("/aggregate")
     public Single<List<PersonAggregationDataDTO>> getAggregation() {
         return personService.getAggregation();

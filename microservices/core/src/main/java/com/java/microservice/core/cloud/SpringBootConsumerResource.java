@@ -11,9 +11,6 @@ public interface SpringBootConsumerResource {
     @PostMapping
     PersonDTO save(@RequestBody PersonDTO person);
 
-    @GetMapping("{firstName}")
-    PersonDTO findByFirstName(@PathVariable("firstName") String firstName);
-
     @GetMapping("/aggregate")
     List<PersonAggregationDataDTO> getAggregation();
 }

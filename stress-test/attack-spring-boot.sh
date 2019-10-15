@@ -1,0 +1,1 @@
+echo "POST http://localhost:8000/spring-boot-consumer/person" | vegeta attack -rate 500 -header 'content-type:application/json' -body body.json -duration 20000ms | vegeta report -type=text

@@ -18,16 +18,12 @@ public class SpringBootConsumerRxClient {
         this.client = client;
     }
 
-    public Observable<PersonDTO> save(final PersonDTO request) {
-        return new SavePersonObservableCommand(client, request).toObservable();
-    }
-
-    public Observable<PersonDTO> findByFirstName(final String firstName) {
-        return new FindByFirstNameObservableCommand(client, firstName).toObservable();
-    }
-
     public Observable<List<PersonAggregationDataDTO>> getAggregation() {
         return new GetAggregationObservableCommand(client).toObservable();
+    }
+
+    public Observable<PersonDTO> save(final PersonDTO request) {
+        return new SavePersonObservableCommand(client, request).toObservable();
     }
 
     class SavePersonObservableCommand extends HystrixObservableCommand<PersonDTO> {
@@ -44,23 +40,6 @@ public class SpringBootConsumerRxClient {
         @Override
         protected Observable<PersonDTO> construct() {
             return fromCallable(() -> client.save(request));
-        }
-    }
-
-    class FindByFirstNameObservableCommand extends HystrixObservableCommand<PersonDTO> {
-        private final SpringBootConsumerClient client;
-        private final String firstName;
-
-        FindByFirstNameObservableCommand(final SpringBootConsumerClient client,
-                                         final String firstName) {
-            super(HystrixCommandGroupKey.Factory.asKey("default"));
-            this.client = client;
-            this.firstName = firstName;
-        }
-
-        @Override
-        protected Observable<PersonDTO> construct() {
-            return fromCallable(() -> client.findByFirstName(firstName));
         }
     }
 
