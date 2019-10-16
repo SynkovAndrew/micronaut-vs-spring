@@ -16,8 +16,8 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 @Service
 @RequiredArgsConstructor
 public class PersonProducerService {
-    private static final int REQUEST_COUNT = 10000;
-    private static final int THREAD_COUNT = 20;
+    private static final int REQUEST_COUNT = 2;
+    private static final int THREAD_COUNT = 2;
     private final PersonPropertyGenerator generator;
     private final SpringBootConsumerRxClient springBootConsumerClient;
     private final MicronautConsumerRxClient micronautConsumerClient;
@@ -37,21 +37,19 @@ public class PersonProducerService {
     @PostConstruct
     public void init() throws InterruptedException {
         Thread.sleep(7000);
-        for (int j = 0; j < THREAD_COUNT; j++) {
-            executorService.submit(() -> {
-                for (int i = 0; i < REQUEST_COUNT; i++) {
-                    springBootConsumerClient.save(createPerson())
-                            .doOnError((error) -> log.error(error.getMessage()))
-                            .subscribe((response) -> log.info("Person's been sent: {} to spring boot consumer", response));
-                }
-            });
-/*            executorService.submit(() -> {
-                for (int i = 0; i < REQUEST_COUNT; i++) {
-                    micronautConsumerClient.save(createPerson())
-                            .doOnError((error) -> log.error(error.getMessage()))
-                            .subscribe((response) -> log.info("Person's been sent: {} micronaut consumer", response));
-                }
-            });*/
-        }
+        executorService.submit(() -> {
+            for (int i = 0; i < REQUEST_COUNT; i++) {
+                springBootConsumerClient.save(createPerson())
+                        .doOnError((error) -> log.error(error.getMessage()))
+                        .subscribe((response) -> log.info("Person's been sent: {} to spring boot consumer", response));
+            }
+        });
+        executorService.submit(() -> {
+            for (int i = 0; i < REQUEST_COUNT; i++) {
+                micronautConsumerClient.save(createPerson())
+                        .doOnError((error) -> log.error(error.getMessage()))
+                        .subscribe((response) -> log.info("Person's been sent: {} micronaut consumer", response));
+            }
+        });
     }
 }

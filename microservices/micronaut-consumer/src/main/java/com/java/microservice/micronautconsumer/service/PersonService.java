@@ -3,6 +3,7 @@ package com.java.microservice.micronautconsumer.service;
 import com.java.microservice.core.dto.PersonAggregationDataDTO;
 import com.java.microservice.core.dto.PersonDTO;
 import com.java.microservice.micronautconsumer.domain.Person;
+import com.java.microservice.micronautconsumer.kafka.PersonKafkaClient;
 import com.java.microservice.micronautconsumer.repository.PersonRepository;
 import io.reactivex.Single;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,15 @@ import java.util.List;
 public class PersonService {
     private final MappingService mappingService;
     private final PersonRepository repository;
+    private final PersonKafkaClient personKafkaClient;
 
     @Inject
     public PersonService(final PersonRepository repository,
-                         final MappingService mappingService) {
+                         final MappingService mappingService,
+                         final PersonKafkaClient personKafkaClient) {
         this.repository = repository;
         this.mappingService = mappingService;
+        this.personKafkaClient = personKafkaClient;
     }
 
     public Single<List<PersonAggregationDataDTO>> getAggregation() {
@@ -31,8 +35,12 @@ public class PersonService {
     }
 
     public Single<PersonDTO> save(final PersonDTO request) {
-        log.info("Saving person: {}", request);
         return repository.save(mappingService.map(request, Person.class))
-                .map(person -> mappingService.map(person, PersonDTO.class));
+                .map(saved -> {
+                    log.info("Person: {} 's been saved!", request);
+                    final PersonDTO person = mappingService.map(saved, PersonDTO.class);
+                    personKafkaClient.send(person);
+                    return person;
+                });
     }
 }

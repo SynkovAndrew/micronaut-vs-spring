@@ -18,3 +18,7 @@ mongodb:
     maxWaitQueueSize: 5
   connectionPool:
     maxSize: 20
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
